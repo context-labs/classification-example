@@ -254,14 +254,10 @@ print(result["labels"], result["metadata"])
 
 ### Performance Expectations & Service Limits
 
-**Typical Response Times:**
-- A simple, single-page PDF typically classifies in **3-5 seconds**
-- A complex 10-page document with dense text and images may take up to **25 seconds**
-
 **API Timeouts:**
 - This service is built on Cloudflare Workers, which has a maximum execution time
 - Requests involving very large or complex PDFs that take longer than **~30 seconds** to process will fail with a **504 Gateway Timeout** error
-- This is most common for documents near the 10MB size limit
+- This is most common for documents near the 10MB size limit--since we only use the first 10 pages anyway for this endpoint, it's recommended you only submit 10 pages of your documents to avoid failures.
 
 ### Key Limitations
 
