@@ -203,117 +203,52 @@ curl -X POST https://delicate-bird-c901.sam-b0c.workers.dev/classify \
 base64 -i document.pdf -o document.b64
 ```
 
-### Handling Large PDFs
-
-For very large PDFs that cause "argument list too long" in shells, use a file-based payload:
-
-```bash
-cat > payload.json << 'EOF'
-{
-  "document": "$(cat document.b64)",
-  "additional_labels": ["Tax Document", "W2"]
-}
-EOF
-
-curl -X POST "https://delicate-bird-c901.sam-b0c.workers.dev/classify" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $INFERENCE_API_KEY" \
-  -d @payload.json | jq .
-```
-
 ### TypeScript (Node)
 
 ```javascript
-import * as fs from "node:fs";
+import * as fs from "fs";
 
-const API_URL = "https://delicate-bird-c901.sam-b0c.workers.dev/classify";
-const API_KEY = process.env.INFERENCE_API_KEY ?? "";
+const fileBase64 = fs.readFileSync("sample.pdf", { encoding: "base64" });
 
-async function classifyDocument(filePath: string, additional_labels: string[] = []) {
-  const fileBase64 = fs.readFileSync(filePath, { encoding: "base64" });
-  const resp = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      document: fileBase64,
-      additional_labels,
-    }),
-  });
+const response = await fetch("https://delicate-bird-c901.sam-b0c.workers.dev/classify", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    document: fileBase64,
+    additional_labels: ["Invoice", "Contract"],
+  }),
+});
 
-  if (!resp.ok) {
-    const text = await resp.text();
-    throw new Error(`Request failed (${resp.status}): ${text}`);
-  }
-
-  const data = (await resp.json()) as {
-    labels: string[];
-    metadata: {
-      processingTimeMs: number;
-      pageCount: number;
-      pdfSizeMB: number;
-      pagesProcessed: number;
-      correlationId: string;
-      timestamp: string;
-    };
-  };
-  return data;
-}
-
-(async () => {
-  const { labels, metadata } = await classifyDocument("./sample.pdf", ["Invoice", "Contract"]);
-  console.log(labels, metadata);
-})();
+const result = await response.json();
+console.log(result.labels, result.metadata);
 ```
 
 ### Python
 
 ```python
-import os
 import base64
-from typing import Dict, List, Any, Optional
 import requests
 
-API_URL = "https://delicate-bird-c901.sam-b0c.workers.dev/classify"
-API_KEY = os.getenv("INFERENCE_API_KEY", "")
+with open("sample.pdf", "rb") as f:
+    file_b64 = base64.b64encode(f.read()).decode("utf-8")
 
-def classify_document(file_path: str, additional_labels: Optional[List[str]] = None) -> Dict[str, Any]:
-    """
-    Classify a document using the Dropbox document classification API.
+response = requests.post(
+    "https://delicate-bird-c901.sam-b0c.workers.dev/classify",
+    json={
+        "document": file_b64,
+        "additional_labels": ["Invoice", "Contract"]
+    },
+    headers={
+        "Authorization": "Bearer YOUR_API_KEY",
+        "Content-Type": "application/json",
+    }
+)
 
-    Args:
-        file_path: Path to the PDF file to classify
-        additional_labels: Optional list of additional labels to consider
-
-    Returns:
-        Dict containing 'labels' and 'metadata' keys
-    """
-    with open(file_path, "rb") as f:
-        file_b64 = base64.b64encode(f.read()).decode("utf-8")
-
-    response = requests.post(
-        API_URL,
-        json={
-            "document": file_b64,
-            "additional_labels": additional_labels or []
-        },
-        headers={
-            "Authorization": f"Bearer {API_KEY}",
-            "Content-Type": "application/json",
-        }
-    )
-
-    if response.status_code != 200:
-        raise RuntimeError(f"Request failed ({response.status_code}): {response.text}")
-
-    return response.json()
-
-
-if __name__ == "__main__":
-    result = classify_document("./sample.pdf", ["Invoice", "Contract"])
-    print(result.get("labels"), result.get("metadata"))
+result = response.json()
+print(result["labels"], result["metadata"])
 ```
 
 ## Notes & best practices

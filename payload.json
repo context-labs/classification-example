@@ -1,4 +1,0 @@
-{
-  "document": "'"$(cat sample.b64)"'",
-  "additional_labels": ["Tax Document", "W2"]
-}
