@@ -30,11 +30,12 @@ Classify documents (PDF, images, Word) with Gemma 3 27B. Under the hood, it uses
 If the document cannot be parsed or converted to an image, the endpoint returns a `400` error.
 
 ## Process flow
+When you submit a Base64 document, this is what happens. The Cloudflare worker:
 
-1. Receive document upload as Base64
-2. Convert document pages to one or more images
-3. Send images and combined labels (default + additional) to Gemma 3 27B
-4. Parse model output and return matched labels
+1. Receives document upload as Base64
+2. Converts document pages to one or more images
+3. Sends images and combined labels (default + additional) to Gemma 3 27B
+4. Parses model output and returns matched labels
 
 ## Response
 
