@@ -1,6 +1,6 @@
 # Document Classification
 
-Classify business documents (PDF, images, Word) with Gemma 3 27B
+Classify documents (PDF, images, Word) with Gemma 3 27B. Under the hood, it uses [structured outputs](https://docs.inference.net/features/structured-outputs) to match the labels given.
 
 > **Note**
 > This endpoint does not use the OpenAI SDK. Call it directly with HTTPS.
@@ -11,7 +11,6 @@ Classify business documents (PDF, images, Word) with Gemma 3 27B
 - **Path**: `/classify`
 
 ## Request
-
 ```json
 {
   "document": "base64_encoded_document_string",
@@ -251,8 +250,60 @@ result = response.json()
 print(result["labels"], result["metadata"])
 ```
 
+## API Behavior and Limits
+
+### Performance Expectations & Service Limits
+
+**Typical Response Times:**
+- A simple, single-page PDF typically classifies in **3-5 seconds**
+- A complex 10-page document with dense text and images may take up to **25 seconds**
+
+**API Timeouts:**
+- This service is built on Cloudflare Workers, which has a maximum execution time
+- Requests involving very large or complex PDFs that take longer than **~30 seconds** to process will fail with a **504 Gateway Timeout** error
+- This is most common for documents near the 10MB size limit
+
+### Key Limitations
+
+**Page Processing Limit:**
+- The API will only analyze the **first 10 pages** of any PDF
+- If your document is longer, content beyond page 10 will be **ignored**, which may affect classification accuracy
+
+**File Size Limit:**
+- The maximum allowed file size is **10MB**
+- Requests with larger documents will be rejected immediately with a `DOCUMENT_TOO_LARGE` error
+
+**Unsupported Content:**
+- The API cannot process password-protected or encrypted PDFs
+- Corrupted or non-standard PDF files may fail during conversion
+
+### Error Handling
+
+The API returns structured error responses with specific error codes. Here's a comprehensive guide:
+
+| Error Code | HTTP Status | Common Cause | Recommended Action for User |
+|------------|-------------|--------------|-----------------------------|
+| `UNAUTHORIZED` | 401 | The Authorization header is missing, malformed, or contains an invalid key | Ensure you are sending a `Bearer <YOUR_INFERENCENET_API_KEY>` header with a valid key |
+| `DOCUMENT_TOO_LARGE` | 413 | The submitted document exceeds the 10MB file size limit | Reduce the file size of your document before encoding it to base64. Consider compressing images within the PDF if possible |
+| `INVALID_DOCUMENT_FORMAT` | 415 | The base64 string does not represent a valid PDF file | Verify that the document is a valid PDF and that the base64 encoding is correct. The API does not support encrypted or password-protected PDFs |
+| `EMPTY_PDF` | 422 | The PDF was successfully processed but found to contain zero pages | Check your source document to ensure it is not empty or corrupted |
+| `PDF_CONVERSION_FAILED` | 502 | The external PDF conversion service (PDF.co) could not process the file | This usually indicates a corrupted or non-standard PDF. Try re-saving the PDF from a trusted source and submit it again |
+| `CLASSIFICATION_FAILED` | 502 | The AI model failed to analyze the images and return a classification | This may be a temporary issue with the AI service. Please retry your request. If the problem persists, the document may be unclassifiable (e.g., blank pages) |
+| `INTERNAL_ERROR` | 500 | An unexpected error occurred on the server | This is a server-side issue. Please wait a moment and retry your request. Use the correlationId from the response if you need to report the issue |
+
+### Error Response Format
+
+All errors return a consistent JSON structure:
+
+```json
+{
+  "error": "Human-readable error message",
+  "code": "ERROR_CODE"
+}
+```
+
 ## Notes & best practices
 
 - Keep label lists concise and mutually exclusive when possible
 - Merge defaults + `additional_labels` to extend coverage without losing core categories
-# classification-example
+- Monitor the `processingTimeMs` field to optimize your usage patterns
