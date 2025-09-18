@@ -184,7 +184,9 @@ Prepare a Base64 file (macOS/Linux):
 base64 -i ./sample.pdf -o ./sample.b64
 ```
 
-### Quick Test with Sample PDF (macOS)
+### Quick Test with Sample PDF
+
+This curl requests takes in a sample invoice that we have already converted to base64.
 
 ```bash
 # Test with additional labels
