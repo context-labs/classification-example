@@ -190,7 +190,7 @@ This curl requests takes in a sample invoice that we have already converted to b
 
 ```bash
 # Test with additional labels
-curl -X POST https://delicate-bird-c901.sam-b0c.workers.dev/classify/document \
+curl -X POST https://api.inference.net/classify/document \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $INFERENCE_API_KEY" \
   -d "{\"document\": \"$(cat sample.b64)\", \"additional_labels\": [\"Receipt\", \"Bill\"]}" | jq .
@@ -210,7 +210,7 @@ import * as fs from "fs";
 
 const fileBase64 = fs.readFileSync("sample.pdf", { encoding: "base64" });
 
-const response = await fetch("https://delicate-bird-c901.sam-b0c.workers.dev/classify/document", {
+const response = await fetch("https://api.inference.net/classify/document", {
   method: "POST",
   headers: {
     "Authorization": "Bearer YOUR_API_KEY",
@@ -236,7 +236,7 @@ with open("sample.pdf", "rb") as f:
     file_b64 = base64.b64encode(f.read()).decode("utf-8")
 
 response = requests.post(
-    "https://delicate-bird-c901.sam-b0c.workers.dev/classify/document",
+    "https://api.inference.net/classify/document",
     json={
         "document": file_b64,
         "additional_labels": ["Invoice", "Contract"]
