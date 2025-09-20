@@ -268,6 +268,8 @@ print(result["labels"], result["metadata"])
 
 ### Performance Expectations & Service Limits
 
+**Note:** This API is is not yet ready for production workloads. It is intended for evaluation and development purposes only.
+
 **API Timeouts:**
 - since we only use the first 5 pages anyway for this endpoint, it's recommended you only submit 5 pages of your documents to avoid failures.
 
