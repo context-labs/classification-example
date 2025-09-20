@@ -173,6 +173,14 @@ Warranty Document
 Service Agreement
 ```
 
+## API Key Setup
+
+To use this API, you need an Inference.net API key. You can get one by:
+
+1. Visiting [inference.net](https://inference.net)
+2. Signing up for an account
+3. Generating an API key in your [dashboard](https://inference.net/dashboard/api-keys)
+
 ## Examples
 
 Set your API key first:
@@ -261,15 +269,13 @@ print(result["labels"], result["metadata"])
 ### Performance Expectations & Service Limits
 
 **API Timeouts:**
-- This service is built on Cloudflare Workers, which has a maximum execution time
-- Requests involving very large or complex PDFs that take longer than **~30 seconds** to process will fail with a **504 Gateway Timeout** error
-- This is most common for documents near the 10MB size limit--since we only use the first 10 pages anyway for this endpoint, it's recommended you only submit 10 pages of your documents to avoid failures.
+- since we only use the first 5 pages anyway for this endpoint, it's recommended you only submit 5 pages of your documents to avoid failures.
 
 ### Key Limitations
 
 **Page Processing Limit:**
-- The API will only analyze the **first 10 pages** of any PDF
-- If your document is longer, content beyond page 10 will be **ignored**, which may affect classification accuracy
+- The API will only analyze the **first 5 pages** of any PDF
+- If your document is longer, content beyond page 5 will be **ignored**, which may affect classification accuracy
 
 **File Size Limit:**
 - The maximum allowed file size is **10MB**
