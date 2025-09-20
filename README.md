@@ -186,7 +186,7 @@ To use this API, you need an Inference.net API key. You can get one by:
 Set your API key first:
 
 ```bash
-export INFERENCE_API_KEY=inference-33056b2318064e79a308ec7731e44df0
+export INFERENCE_API_KEY=<your-inference-api-key>
 ```
 
 Prepare a Base64 file (macOS/Linux):
@@ -224,7 +224,7 @@ const fileBase64 = fs.readFileSync("examples/sample.pdf", { encoding: "base64" }
 const response = await fetch("https://api.inference.net/classify/document", {
   method: "POST",
   headers: {
-    "Authorization": "Bearer inference-33056b2318064e79a308ec7731e44df0",
+    "Authorization": "Bearer YOUR_INFERENCE_API_KEY",
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
@@ -255,7 +255,7 @@ response = requests.post(
         "additionalLabels": ["Invoice", "Contract"]
     },
     headers={
-        "Authorization": "Bearer inference-33056b2318064e79a308ec7731e44df0",
+        "Authorization": "Bearer YOUR_INFERENCE_API_KEY",
         "Content-Type": "application/json",
     }
 )
