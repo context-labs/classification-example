@@ -2,13 +2,32 @@
 
 Classify documents (PDF, images, Word) with Gemma 3 27B. Under the hood, it uses [structured outputs](https://docs.inference.net/features/structured-outputs) to match the labels given.
 
+- [Endpoint](#endpoint)
+- [Request](#request)
+  - [Supported document types](#supported-document-types)
+- [Process flow](#process-flow)
+- [Response](#response)
+- [Default labels](#default-labels)
+- [API Key Setup](#api-key-setup)
+- [Examples](#examples)
+  - [Quick Test with Sample PDF](#quick-test-with-sample-pdf)
+  - [Converting PDF to Base64](#converting-pdf-to-base64)
+  - [TypeScript (Node)](#typescript-node)
+  - [Python](#python)
+- [API Behavior and Limits](#api-behavior-and-limits)
+  - [Performance Expectations \& Service Limits](#performance-expectations--service-limits)
+  - [Key Limitations](#key-limitations)
+  - [Error Handling](#error-handling)
+  - [Error Response Format](#error-response-format)
+- [Notes \& best practices](#notes--best-practices)
+
 > **Note**
 > This endpoint does not use the OpenAI SDK. Call it directly with HTTPS.
 
 ## Endpoint
 
 - **Method**: `POST`
-- **Path**: `/classify/document`
+- **Path**: `https://api.inference.net/classify/document`
 
 ## Request
 ```json
